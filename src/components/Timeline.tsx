@@ -62,7 +62,7 @@ function useScrollPosition(){
 }
 
 
-export function Timeline({where = {}}:{where: RouterInputs['post']['timeline']['where']}){
+export function Timeline({where = {}}:{where?: RouterInputs['post']['timeline']['where']}){
 
     const scrollPosition = useScrollPosition()
 
