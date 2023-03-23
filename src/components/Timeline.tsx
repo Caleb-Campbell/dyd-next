@@ -68,7 +68,8 @@ export function Timeline({where = {}}:{where: RouterInputs['post']['timeline']['
 
 
     const {data, hasNextPage, fetchNextPage, isFetching} = api.post.timeline.useInfiniteQuery({
-        limit: 10,
+        limit: LIMIT,
+        where,
     }, {
         getNextPageParam: (lastPage) => lastPage.nextCursor
     })
@@ -188,10 +189,13 @@ function Post ({ post, client, input }:{post: RouterOutputs['post']['timeline'][
             <div>
                     <h3 className=" font-bold text-xl text-center">{post.title}</h3>
                 </div>
+                <div>
+                    <img className="w-full h-auto" src={post.img} alt={post.text} />
+                </div>
             <div className="flex p-2">
 
             {post.author.image && 
-            <Image alt='profile-picture' src={post.author.image} width={48} height={48} className='rounded-full' />
+            <Image alt='profile-picture' src={post.author.image} width={70} height={48} className='rounded-full' />
             }
                 
             <div className="ml-2">

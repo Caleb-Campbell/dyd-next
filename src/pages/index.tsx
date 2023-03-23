@@ -28,9 +28,6 @@ const Home: NextPage = () => {
         <div>
         <Timeline />
         </div>
-        <div className="w-full h-20 bottom-0 absolute left-0 bg-secondary">
-        <LoggedOutBanner />
-        </div>
       </main>
    
     </>

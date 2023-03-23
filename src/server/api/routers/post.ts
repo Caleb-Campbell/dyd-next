@@ -8,13 +8,14 @@ export const postRouter = createTRPCRouter({
     .input(postSchema)
     .mutation(({ctx, input})=>{
         const {prisma, session} = ctx
-        const {text, title} = input
+        const {text, title, img} = input
         const userId = session.user.id
 
         return prisma.post.create({
             data: {
                 text,
                 title,
+                img,
                 author: {
                     connect: {
                         id: userId, 
