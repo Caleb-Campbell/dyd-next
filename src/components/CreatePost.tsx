@@ -20,7 +20,15 @@ export function CreatePost(){
     const [title, setTitle] = useState<string>("")
     const [error, setError] = useState<string>("")
 
-    const { mutateAsync } = api.post.create.useMutation()
+    const utils = api.useContext();
+
+    const { mutateAsync } = api.post.create.useMutation({
+        onSuccess: ()=> {
+            setText("");
+            utils.post.timeline.invalidate();
+        }
+    })
+
 
     const handleSubmit = async (e:any) => {
         e.preventDefault()

@@ -28,16 +28,24 @@ export const postRouter = createTRPCRouter({
     .input(
 
         z.object({
+            where: z.object({
+                author: z.object({
+                    name: z.string().optional()
+                }).optional()
+            }).optional(),
             cursor: z.string().nullish(),
             limit: z.number().min(1).max(100).default(10)
         })
     )
     .query(async({ ctx, input }) => {
       const {prisma,} = ctx;
-      const {cursor, limit} = input;
+      const {cursor, limit, where} = input;
+
+      const userId = ctx.session?.user?.id
 
       const posts= await prisma.post.findMany({
         take: limit + 1,
+        where, 
         orderBy: [
             {
                 createdAt: 'desc'
@@ -45,11 +53,25 @@ export const postRouter = createTRPCRouter({
         ],
         cursor: cursor ? { id: cursor } : undefined,
         include: {
+            likes: {
+                where: {
+                    userId,
+                },
+                select: {
+                    userId: true
+                }
+            },
             author: {
                 select: {
                     name:true,
                     image:true,
                     id:true,
+                }
+            },
+
+            _count:{
+                select:{
+                    likes:true
                 }
             }
         }
@@ -65,7 +87,51 @@ export const postRouter = createTRPCRouter({
 
       }
     }),
-});
+
+    like: protectedProcedure
+    .input(
+        z.object({
+            postId: z.string(),
+        })
+    )
+    .mutation(async ({ ctx, input }) => {
+        const userId = ctx.session.user.id;
+
+        const { prisma } = ctx
+        return prisma.like.create({
+            data: {
+                post: {
+                    connect: {
+                        id: input.postId,
+                    },
+                },
+                user: {
+                    connect: {
+                        id: userId
+                    }
+                }
+            }
+        })
+    }),
+
+    unlike: protectedProcedure
+    .input(
+        z.object({
+            postId: z.string(),
+        })
+    )
+    .mutation(async ({ ctx, input }) => {
+        const userId = ctx.session.user.id;
+
+        const { prisma } = ctx
+        return prisma.like.delete({
+            where: {
+                postId_userId: {
+                    postId: input.postId, 
+                    userId
+                },
+            },
+        });
     })
     
 

@@ -1,12 +1,17 @@
 import { CreatePost } from "./CreatePost"
 import { useSession } from "next-auth/react"
-import { api, RouterOutputs } from "~/utils/api"
+import { api, RouterInputs, RouterOutputs } from "~/utils/api"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import updateLocal from "dayjs/plugin/updateLocale"
 import { AiFillHeart } from "react-icons/ai";
+import { InfiniteData, QueryClient, useQueryClient } from "@tanstack/react-query"
+import Link from "next/link"
+
+
+const LIMIT = 10
 
 
 dayjs.extend(relativeTime);
@@ -57,7 +62,7 @@ function useScrollPosition(){
 }
 
 
-export function Timeline(){
+export function Timeline({where = {}}:{where: RouterInputs['post']['timeline']['where']}){
 
     const scrollPosition = useScrollPosition()
 
@@ -68,6 +73,8 @@ export function Timeline(){
         getNextPageParam: (lastPage) => lastPage.nextCursor
     })
 
+    const client = useQueryClient()
+
     const posts = data?.pages.flatMap((page)=>page.posts) ?? []
 
     useEffect(()=>{
@@ -77,6 +84,7 @@ export function Timeline(){
     },[scrollPosition, hasNextPage, isFetching, fetchNextPage])
 
     const { data: session } = useSession()
+
     return (
         <div data-theme='light' className=" mx-auto h-max">
             {
@@ -84,7 +92,10 @@ export function Timeline(){
             }
             <div className="rounded-md">
             {posts.map((post)=> {
-                return <Post  key={post.id} post={post} />
+                return <Post input={{
+                    where,
+                    limit: LIMIT,
+                }} client={client} key={post.id} post={post} />
             })}
 
 {
@@ -96,9 +107,82 @@ export function Timeline(){
     )
 }
 
-function Post ({ post }:{post: RouterOutputs['post']['timeline']["posts"][number] }) {
+function updateCache({
+    client,
+    variables,
+    data, 
+    action,
+    input
 
+}:{client: QueryClient,
+    input: RouterInputs['post']['timeline']
+    variables:{
+    postId:string
+}
+data: {
+    userId: string
+},
+action: "like" | "unlike"
 
+}){
+    client.setQueryData(
+        [
+            ["post", "timeline"],
+            {
+                input: {
+                    limit: LIMIT,
+                    where: {},
+                },
+                type: "infinite",
+            },
+], (oldData) => {
+    const newData = oldData as InfiniteData<RouterOutputs['post']['timeline']>
+
+    const value = action === 'like'? 1 : -1
+
+    const newPosts = newData.pages.map((page)=> {
+        return {
+            posts: page.posts.map((post) => {
+                if(post.id === variables.postId){
+                    return {
+                        ...post,
+                        likes: action === 'like' ? [data.userId] : [],
+                        _count: {
+                            likes: post._count.likes + value,
+                        }
+                    }
+                }
+
+                return post
+            })
+        }
+        
+    })
+    return {
+        ...newData,
+        pages: newPosts
+    }
+}
+);
+}
+
+function Post ({ post, client, input }:{post: RouterOutputs['post']['timeline']["posts"][number];
+ client: QueryClient;
+ input: RouterInputs['post']['timeline']
+}) {
+
+    const likeMutation = api.post.like.useMutation({
+        onSuccess: (data, variables) => {
+            updateCache({client, data, variables, input, action: 'like'})
+        }
+    }).mutateAsync
+    const unlikeMutation = api.post.unlike.useMutation({
+        onSuccess: (data, variables) => {
+            updateCache({client, data, variables, input, action: 'unlike'})
+        }
+    }).mutateAsync
+
+    const hasLiked = post.likes.length > 0
     return (
         <div className="mb-4 bg-secondary rounded opacity-80">
             <div>
@@ -113,7 +197,11 @@ function Post ({ post }:{post: RouterOutputs['post']['timeline']["posts"][number
             <div className="ml-2">
 
             <div className="flex align-center">
-                <p className="font-bold">{post.author.name}</p>
+                <p className="font-bold">
+                    <Link href={`/${post.author.name}`}>
+                    {post.author.name}
+                    </Link>
+                    </p>
                 <p className="text-sm text-gray-400"> - {dayjs(post.createdAt).fromNow()}</p>
             </div>
             <div>{post.text}</div>
@@ -123,11 +211,23 @@ function Post ({ post }:{post: RouterOutputs['post']['timeline']["posts"][number
         </div>
         <div className="flex mt-4 p-2 items-center">
             <AiFillHeart 
-            // color="red"
+            color={hasLiked ? "red" : "gray"}
             size='1.5rem'
+            onClick={() => {
+
+                if(hasLiked){
+                    unlikeMutation({
+                        postId: post.id
+                    })
+                    return;
+                }
+
+
+                likeMutation({postId: post.id})
+            }}
             
             />
-            <span className="text-sm text-gray-500">{10}</span>
+            <span className="text-sm text-gray-500">{post._count.likes}</span>
         </div>
         </div>
     )
