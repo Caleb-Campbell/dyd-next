@@ -36,7 +36,7 @@ export function CreatePost(){
     const handleSubmit = async (e:any) => { // eslint-disable-line
         e.preventDefault() // eslint-disable-line
         try {
-            await postSchema.parse({text, title, img}) // eslint-disable-line
+            postSchema.parse({text, title, img}) // eslint-disable-line
         } catch(err){setError(e.message)  // eslint-disable-line
             return } 
         if(!title){
