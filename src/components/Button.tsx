@@ -1,6 +1,6 @@
 import React from "react"
 
-export const Button = ({variant, children, onClick }: {variant: string, children: React.ReactNode, onClick: any}) => {
+export const Button = ({variant, children, onClick }: {variant: string, children: React.ReactNode, onClick: ()=>void}) => {
 
 
     if(variant ==='primary'){

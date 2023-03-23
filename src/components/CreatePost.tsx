@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { api } from "~/utils/api"
 import { z } from "zod"
-import { setErrorMap } from "zod"
 
 
 export const postSchema = z.object({

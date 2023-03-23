@@ -6,7 +6,6 @@ import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 import { Container } from "~/components/Container";
-import { LoggedOutBanner } from "~/components/LoggedOutBanner";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
