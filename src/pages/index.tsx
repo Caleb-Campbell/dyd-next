@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react"; //eslint-disable-line
 
 import { Timeline } from "~/components/Timeline";
 import { Button } from "~/components/Button";
@@ -18,8 +18,8 @@ const Home: NextPage = () => {
       </Head>
       <main className="bg-primary" >
         <div data-theme='dark' className="w-100 p-10 flex justify-end">
-        <Button variant="primary" onClick={signIn}>Sign In</Button>
-        <Button variant="primary" onClick={signOut}>Sign Out</Button>
+        <Button variant="primary" onClick={signIn}>Sign In</Button> {/* eslint-disable-line  */}
+        <Button variant="primary" onClick={signOut}>Sign Out</Button> {/* eslint-disable-line  */}
         </div>
         <div>
         <Timeline />

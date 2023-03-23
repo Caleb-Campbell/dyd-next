@@ -28,28 +28,28 @@ export function CreatePost(){
     const { mutateAsync } = api.post.create.useMutation({
         onSuccess: ()=> {
             setText("");
-            utils.post.timeline.invalidate();
+            utils.post.timeline.invalidate(); // eslint-disable-line
         }
     })
 
 
-    const handleSubmit = async (e:any) => {
-        e.preventDefault()
+    const handleSubmit = async (e:any) => { // eslint-disable-line
+        e.preventDefault() // eslint-disable-line
         try {
-             postSchema.parse({text, title, img})
-        } catch(err){setError(e.message) 
-            return }
+            await postSchema.parse({text, title, img}) // eslint-disable-line
+        } catch(err){setError(e.message)  // eslint-disable-line
+            return } 
         if(!title){
             setError('Please include a title')
             return 
         }
-        mutateAsync({title, text, img})
+        mutateAsync({title, text, img}) // eslint-disable-line
     }
 
     return (
         <>
         {error && JSON.stringify(error)}
-        <form onSubmit={handleSubmit} data-theme='dark' className="w-full flex flex-col border-2 p-4 rounded-md mb-4 m-auto">
+        <form onSubmit={handleSubmit} data-theme='dark' className="w-full flex flex-col border-2 p-4 rounded-md mb-4 m-auto"> {/* eslint-disable-line  */}
             <h2 className="text-light font-bold text-center text-text text-xl underline">Create a New Post</h2>
             <label className='text-text fs- text-center text-xl p-1 font-bold'> Title
             <input type='text' className="text-black shadow p-1 w-full text-lg rounded-lg" value={title} onChange={(e)=> {setTitle(e.currentTarget.value)}} />

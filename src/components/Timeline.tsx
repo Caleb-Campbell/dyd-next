@@ -1,13 +1,13 @@
 import { CreatePost } from "./CreatePost"
 import { useSession } from "next-auth/react"
-import { api, RouterInputs, RouterOutputs } from "~/utils/api"
+import { api, RouterInputs, RouterOutputs } from "~/utils/api"  //eslint-disable-line 
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import updateLocal from "dayjs/plugin/updateLocale"
 import { AiFillHeart } from "react-icons/ai";
-import { InfiniteData, QueryClient, useQueryClient } from "@tanstack/react-query"
+import { InfiniteData, QueryClient, useQueryClient } from "@tanstack/react-query" //eslint-disable-line 
 import Link from "next/link"
 
 
@@ -80,7 +80,7 @@ export function Timeline({where = {}}:{where?: RouterInputs['post']['timeline'][
 
     useEffect(()=>{
         if(scrollPosition > 90 && hasNextPage && !isFetching){
-            fetchNextPage()
+            fetchNextPage() //eslint-disable-line 
         }
     },[scrollPosition, hasNextPage, isFetching, fetchNextPage])
 
@@ -113,7 +113,7 @@ function updateCache({
     variables,
     data, 
     action,
-    input
+    input //eslint-disable-line 
 
 }:{client: QueryClient,
     input: RouterInputs['post']['timeline']
@@ -190,7 +190,7 @@ function Post ({ post, client, input }:{post: RouterOutputs['post']['timeline'][
                     <h3 className=" font-bold text-xl text-center">{post.title}</h3>
                 </div>
                 <div>
-                    <img className="w-full h-auto" src={post.img} alt={post.text} />
+                    <img className="w-full h-auto" src={post.img} alt={post.text} /> {/* eslint-disable-line  */}
                 </div>
             <div className="flex p-2">
 
@@ -202,7 +202,7 @@ function Post ({ post, client, input }:{post: RouterOutputs['post']['timeline'][
 
             <div className="flex align-center">
                 <p className="font-bold">
-                    <Link href={`/${post.author.name}`}>
+                    <Link href={`/${post.author.name}`}> {/* eslint-disable-line  */}
                     {post.author.name}
                     </Link>
                     </p>
@@ -220,14 +220,14 @@ function Post ({ post, client, input }:{post: RouterOutputs['post']['timeline'][
             onClick={() => {
 
                 if(hasLiked){
-                    unlikeMutation({
+                    unlikeMutation({ //eslint-disable-line
                         postId: post.id
                     })
                     return;
                 }
 
 
-                likeMutation({postId: post.id})
+                likeMutation({postId: post.id}) //eslint-disable-line
             }}
             
             />

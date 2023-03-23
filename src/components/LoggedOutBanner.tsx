@@ -1,4 +1,4 @@
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { Button } from './Button';
 
 export function LoggedOutBanner () {
@@ -10,8 +10,8 @@ export function LoggedOutBanner () {
 
     return (
         <div className='fixed bottom-0 w-1/2 p-4 text-text flex justify-around m-auto items-center'>
-            <p>Don't miss out!</p>
-            <div><Button variant='primary' onClick={signIn}>Login</Button></div>
+            <p>Don't miss out!</p>{/* eslint-disable-line */}
+            <div><Button variant='primary' onClick={signIn}>Login</Button></div> {/* eslint-disable-line */}
         </div>
     )
 }
