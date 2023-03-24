@@ -73,7 +73,7 @@ model Post {
     title     String
     text      String
     img       String
-    author    User     @relation(fields: [authorId], references: [id])
+    author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId  String
     updatedAt DateTime @updatedAt
     likes     Like[]
